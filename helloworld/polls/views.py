@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse,Http404,HttpResponseRedirect
 from polls.models import User,Article
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail,send_mass_mail
+from django.contrib.auth.hashers import make_password,check_password
 
 # Create your views here.
 def index(request):
@@ -134,3 +135,34 @@ def s_mass_mail(request):
               fail_silently=False
               )
     return HttpResponse("邮件发送成功！")
+
+def reset_psw(request):
+    res = ''
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        new_password = request.POST.get('new_password')
+
+        # 如果新旧密码一致则不允许修改
+        if password == new_password:
+            res = "新旧密码一致，无需修改"
+            return render(request,'reset_psw.html',{"msg":res})
+        else:
+            # 如果用户存在测校验就密码是否正确
+            psw = User.objects.filter(user_name=username)[0]
+            print (psw.psw)
+            # is_psw_true = check_password(password,psw.psw)
+            if password == psw.psw:
+                # User.objects.filter(user_name=username).update(psw=new_password)
+                user = User.objects.get(user_name=username)
+                user.psw = new_password
+                user.save()
+                res = '密码修改成功'
+            else:
+                res = '密码错误'
+            return render(request,'reset_psw.html',{"msg":res})
+    else:
+        return render(request,'reset_psw.html',{'msg':res})
+
+
+

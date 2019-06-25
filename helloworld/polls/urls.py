@@ -18,4 +18,5 @@ urlpatterns = [
     url('^login/', views.login),
     url('^s_mail/', views.s_mail),
     url('^s_mass_mail/', views.s_mass_mail),
+    url('^reset_psw/', views.reset_psw),
 ]
