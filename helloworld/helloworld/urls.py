@@ -21,5 +21,6 @@ from . import testdb
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('polls.urls')),
-    path('',include('polls.urls_db'))
+    path('',include('polls.urls_db')),
+    path("",include("hehe.urls")),
 ]

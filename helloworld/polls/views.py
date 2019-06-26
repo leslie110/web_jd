@@ -1,9 +1,11 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,Http404,HttpResponseRedirect
-from polls.models import User,Article
+from polls.models import Article
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail,send_mass_mail
 from django.contrib.auth.hashers import make_password,check_password
+from django.contrib.auth.models import User
+from django.contrib.auth import login,authenticate
 
 # Create your views here.
 def index(request):
@@ -26,7 +28,7 @@ def home1(request,year,month):
 def home(request):
     return render(request,'home.html')
 
-
+@login_required(login_url='/login')
 def leslie(request):
     context = {}
     context['name'] = '马克华菲'
@@ -61,9 +63,9 @@ def select_mail(request):
     if request.method == 'GET':
         r = request.GET.get('name',None)
         if r:
-            res = User.objects.filter(user_name="%s"%r)
+            res = User.objects.filter(username="%s"%r)
             try:
-                res = res[0].mail
+                res = res[0].email
             except:
                 res = "没有查询到信息"
             return render(request,'name.html',{'email':res})
@@ -79,31 +81,32 @@ def register(request):
         psw = request.POST.get('password')
         mail = request.POST.get('email')
         # 先查询数据库中有没有，有的话说明已经注册了
-        user_list = User.objects.filter(user_name=user_name)
+        user_list = User.objects.filter(username=user_name)
         if user_list:
             # 如果已经注册给个提示信息
             rename = "%s用户已经注册过了"%user_name
             return render(request,'register.html',{'rename':rename})
         else:
             # 如果没有注册，则插入数据库
-            sql = User(user_name=user_name,psw=psw,mail=mail)
+            sql = User.objects.create_user(username=user_name,password=psw,email=mail)
             sql.save()
             return HttpResponseRedirect('/login')
     return render(request,'register.html')
-def login(request):
+def log_in(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        # 在数据库中用账号查询密码如果正确则可以给予登录
-        try:
-            psw = User.objects.get(user_name=username).psw
-        except:
-            error = "用户不存在"
-            return render(request,'login.html',{'error':error})
-        if psw == password:
-            return HttpResponseRedirect('/leslie')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request,user)
+                request.session['user'] = username
+                return HttpResponseRedirect('/leslie')
+            else:
+                error = "用户不存在"
+                return render(request,'login.html',{'error':error})
         else:
-            error = "密码不正确"
+            error = "用户名或密码不正确"
             return render(request, 'login.html', {'error': error})
     return render(request,'login.html')
 def s_mail(request):
@@ -148,14 +151,9 @@ def reset_psw(request):
             res = "新旧密码一致，无需修改"
             return render(request,'reset_psw.html',{"msg":res})
         else:
-            # 如果用户存在测校验就密码是否正确
-            psw = User.objects.filter(user_name=username)[0]
-            print (psw.psw)
-            # is_psw_true = check_password(password,psw.psw)
-            if password == psw.psw:
-                # User.objects.filter(user_name=username).update(psw=new_password)
-                user = User.objects.get(user_name=username)
-                user.psw = new_password
+            user = authenticate(username=username,password=password)
+            if user is not None:
+                user.set_password(new_password)
                 user.save()
                 res = '密码修改成功'
             else:

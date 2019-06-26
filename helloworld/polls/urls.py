@@ -15,7 +15,7 @@ urlpatterns = [
     url('^result', views.result_qq),
     url('^select_mail/', views.select_mail),
     url('^logon/', views.register),
-    url('^login/', views.login),
+    url('^login/', views.log_in),
     url('^s_mail/', views.s_mail),
     url('^s_mass_mail/', views.s_mass_mail),
     url('^reset_psw/', views.reset_psw),
