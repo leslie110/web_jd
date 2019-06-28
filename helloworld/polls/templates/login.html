@@ -1,25 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>登录页面</title>
-</head>
+{% include "top.html" %}
 <body>
-<h1>欢迎登录！</h1>
-<form action="" method="post">
-    {% csrf_token %}
-    <p>
-        用户名 ：<input type="text" id="id_username" name="username" required="required"> * {{rename}}
-    </p>
-    <p>
-         密码 ：<input type="text" id="id_password" name="password" required="required"> *
-    </p>
-    <p>
-        <input type="submit" value="登录">
-    </p>
-    <p>
-        {{error}}
-    </p>
-</form>
+     <div class="container">
+      <form class="form-signin" action="" method="post">
+        <h2 class="form-signin-heading">用户登录</h2>
+        <label for="inputUsername" class="sr-only">username</label>
+        <input type="text" id="inputUsername" name="username" class="form-control" placeholder="username" required autofocus>
+        <label for="inputPassword" class="sr-only">password</label>
+        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="password" required>
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit" id="btn">登录</button>
+          <br>
+          <p style="color: red">
+              {{error}}<br>
+          </p>
+
+         {% csrf_token %}
+      </form>
+
+    </div> <!-- /container -->
+
 </body>
 </html>

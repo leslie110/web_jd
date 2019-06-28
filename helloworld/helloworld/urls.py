@@ -17,10 +17,12 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls import url
 from . import testdb
+import xadmin
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',include('polls.urls')),
-    path('',include('polls.urls_db')),
-    path("",include("hehe.urls")),
+    url('^admin/', admin.site.urls),
+    url('polls/',include('polls.urls')),
+    url('polls/',include('polls.urls_db')),
+    url("hehe/",include("hehe.urls")),
+    url("^xadmin/", xadmin.site.urls),
 ]

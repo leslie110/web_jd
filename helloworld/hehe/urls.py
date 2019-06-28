@@ -2,5 +2,7 @@ from django.conf.urls import url
 from hehe import views
 
 urlpatterns = [
-    url('^h_login/$',views.h_login),
+    url('^login/$',views.hehe_login),
+    url('^logon/$', views.hehe_logon),
+    url('^reset_psw/$', views.hehe_reset_psw),
 ]

@@ -101,7 +101,7 @@ def log_in(request):
             if user.is_active:
                 login(request,user)
                 request.session['user'] = username
-                return HttpResponseRedirect('/leslie')
+                return HttpResponseRedirect('/polls/leslie')
             else:
                 error = "用户不存在"
                 return render(request,'login.html',{'error':error})
